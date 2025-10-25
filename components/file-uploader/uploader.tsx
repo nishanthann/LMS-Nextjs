@@ -2,20 +2,129 @@
 
 import { useCallback, useState } from "react";
 import { useDropzone, FileRejection } from "react-dropzone";
-import { Button } from "../ui/button";
+
 import { RenderErrorState, RenderState } from "./RenderState";
 
 import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
+
+interface UploaderState {
+  id: string | null;
+  file: File | null;
+  uploading: boolean;
+  progress: number;
+  key?: string;
+  error: boolean | null;
+
+  isDeleting: boolean;
+  objectUrl?: string | null;
+  fileType: "image" | "video";
+}
 
 export function MyDropzone() {
   const [hasError, setHasError] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<UploaderState>({
+    error: null,
+    file: null,
+    id: null,
+    progress: 0,
+    isDeleting: false,
+    uploading: false,
+    objectUrl: null,
+    fileType: "image",
+  });
+
+  async function uploadFile(file: File) {
+    setFile((prev) => ({
+      ...prev,
+      uploading: true,
+      progress: 0,
+    }));
+
+    try {
+      // get presigned url
+      const presignedResponse = await fetch("/api/s3/upload/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fileName: file.name,
+          contentType: file.type,
+          size: file.size,
+          isImage: true,
+        }),
+      });
+      if (!presignedResponse.ok) {
+        toast.error("failed to get presigned URL");
+        setFile((prev) => ({
+          ...prev,
+          uploading: false,
+          progress: 0,
+          error: true,
+        }));
+        return;
+      }
+      const { presignedUrl, key } = await presignedResponse.json();
+
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const progress = Math.round((e.loaded / e.total) * 100);
+            setFile((prev) => ({
+              ...prev,
+              progress,
+            }));
+          }
+        };
+        xhr.onload = () => {
+          if (xhr.status === 200 || xhr.status === 204) {
+            setFile((prev) => ({
+              ...prev,
+              progress: 100,
+              uploading: false,
+              key,
+            }));
+            toast.success("File uploaded successfully");
+            resolve();
+          } else {
+            reject(new Error("failed to upload file...."));
+          }
+        };
+        xhr.onerror = () => {
+          reject(new Error("failed to upload file...."));
+        };
+        xhr.open("PUT", presignedUrl);
+        xhr.setRequestHeader("Content-Type", file.type);
+        xhr.send(file);
+      });
+    } catch {
+      toast.error("failed to upload file");
+      setFile((prev) => ({
+        ...prev,
+        error: true,
+        uploading: false,
+        progress: 0,
+      }));
+    }
+  }
 
   // Accepted files
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const selectedFile = acceptedFiles[0];
-      setFile(selectedFile);
+      setFile({
+        file: selectedFile,
+        id: uuidv4(),
+        uploading: false,
+        progress: 0,
+        error: false,
+        isDeleting: false,
+        objectUrl: URL.createObjectURL(selectedFile),
+        fileType: "image",
+      });
+      uploadFile(selectedFile);
       setHasError(false); // clear error
       toast.success(`File "${selectedFile.name}" uploaded successfully!`);
       console.log("Accepted file:", selectedFile);
@@ -44,10 +153,23 @@ export function MyDropzone() {
     });
   }, []);
 
+  function renderContent() {
+    if (file.uploading) {
+      return <h1>Uploading...</h1>;
+    }
+    if (file.error) {
+      return <RenderErrorState />;
+    }
+    if (file.objectUrl) {
+      return <h1>uploaded file</h1>;
+    }
+    return <RenderState isDragActive={isDragActive} />;
+  }
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     onDropRejected,
-    accept: { "image/*": [], "application/pdf": [] },
+    accept: { "image/*": [] },
     multiple: false,
     maxFiles: 1,
     maxSize: 5 * 1024 * 1024,
@@ -67,16 +189,7 @@ export function MyDropzone() {
     >
       <input {...getInputProps()} />
 
-      {/* Show error state if hasError */}
-      {hasError ? (
-        <RenderErrorState />
-      ) : file ? (
-        <p className="text-sm font-medium text-gray-800">{file.name}</p>
-      ) : (
-        <RenderState isDragActive={isDragActive} />
-      )}
-
-      {!hasError && <RenderState isDragActive={isDragActive} />}
+      {renderContent()}
     </div>
   );
 }

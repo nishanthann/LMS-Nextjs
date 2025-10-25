@@ -15,7 +15,7 @@ import {
 import { Toggle } from "../ui/toggle";
 import { Editor } from "@tiptap/react";
 
-export default function MenuBar({ editor }: { editor: Editor | null }) {
+export default function MenuBar2({ editor }: { editor: Editor | null }) {
   if (!editor) {
     return null;
   }
