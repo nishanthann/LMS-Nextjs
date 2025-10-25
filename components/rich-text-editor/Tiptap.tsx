@@ -2,7 +2,7 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Menubar } from "./Menubar";
+import MenuBar2 from "./menu-bar";
 
 export function TiptapEditor() {
   const editor = useEditor({
@@ -15,7 +15,7 @@ export function TiptapEditor() {
 
   return (
     <div className="border rounded-md p-4">
-      <Menubar editor={editor} />
+      <MenuBar2 editor={editor} />
 
       {/* ✅ this actually renders the TipTap editable area */}
       <EditorContent

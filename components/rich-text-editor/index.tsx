@@ -8,10 +8,7 @@ import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import Heading from "@tiptap/extension-heading";
 
-interface RichTextEditorProps {
-  content: string;
-  onChange: (content: string) => void;
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function RichTextEditor({ field }: { field: any }) {
   const editor = useEditor({
     extensions: [
