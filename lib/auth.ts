@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./db";
 import { emailOTP } from "better-auth/plugins";
 import { resend } from "./resend";
+import { admin } from "better-auth/plugins";
 
 // If your Prisma file is located elsewhere, you can change the path
 
@@ -27,5 +28,6 @@ export const auth = betterAuth({
         });
       },
     }),
+    admin(),
   ],
 });

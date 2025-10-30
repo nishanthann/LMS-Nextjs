@@ -50,7 +50,9 @@ export default function Component({ email, name, image }: iAppProps) {
         <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
           <Avatar>
             <AvatarImage src={image} alt="Profile image" />
-            <AvatarFallback>{name[0].toUpperCase()}</AvatarFallback>
+            <AvatarFallback className="flex items-center justify-center text-base bg-primary text-black text-center font-semibold">
+              {email[0].toUpperCase()}
+            </AvatarFallback>
           </Avatar>
           <ChevronDownIcon
             size={16}
@@ -62,7 +64,7 @@ export default function Component({ email, name, image }: iAppProps) {
       <DropdownMenuContent className="max-w-64">
         <DropdownMenuLabel className="flex min-w-0 flex-col">
           <span className="truncate text-sm font-medium text-foreground">
-            {name}
+            {name || email?.split("@")[0] || "User"}
           </span>
           <span className="truncate text-xs font-normal text-muted-foreground">
             {email}

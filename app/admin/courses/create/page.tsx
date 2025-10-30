@@ -15,7 +15,7 @@ import {
   CourseSchemaType,
   statuses,
 } from "@/lib/zodSchemas";
-import { ArrowBigLeft, Sparkle } from "lucide-react";
+import { ArrowBigLeft, Loader2, Sparkle } from "lucide-react";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,15 +34,18 @@ import {
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import slugify from "slugify";
-import { TiptapEditor } from "@/components/rich-text-editor/Tiptap";
 import RichTextEditor from "@/components/rich-text-editor";
-import { useState } from "react";
 import { MyDropzone } from "@/components/file-uploader/uploader";
+import { useTransition } from "react";
+import { tryCatch } from "@/hooks/try-catch";
+import { createCourseFile } from "./action";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+  const [pending, startTransition] = useTransition();
+  const router = useRouter();
   const form = useForm<CourseSchemaType>({
     resolver: zodResolver(courseSchema),
     defaultValues: {
@@ -58,21 +61,21 @@ export default function Page() {
       status: "DRAFT",
     },
   });
-  const [post, setPost] = useState("");
 
-  const onChange = (content: string) => {
-    setPost(content);
-    console.log(content);
-  };
-
-  function onSubmit(data: CourseSchemaType) {
-    toast("Course Created", {
-      description: (
-        <pre className="bg-muted text-muted-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4 text-xs">
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: "bottom-right",
+  function onSubmit(values: CourseSchemaType) {
+    startTransition(async () => {
+      const { data: result, error } = await tryCatch(createCourseFile(values));
+      if (error) {
+        toast.error("Failed to create course");
+        return;
+      }
+      if (result.status === "success") {
+        toast.success(result.message);
+        form.reset();
+        router.push("/admin/courses");
+      } else if (result.status === "error") {
+        toast.error(result.message);
+      }
     });
   }
 
@@ -199,13 +202,6 @@ export default function Page() {
                     Description
                   </FieldLabel>
                   <RichTextEditor field={field} />
-                  {/* <Textarea
-                    {...field}
-                    id="course-description"
-                    rows={6}
-                    placeholder="Explain what this course covers..."
-                    aria-invalid={fieldState.invalid}
-                  /> */}
 
                   <FieldDescription>
                     Include what students will learn, prerequisites, etc.
@@ -346,37 +342,8 @@ export default function Page() {
                   className="md:col-span-2"
                 >
                   <FieldLabel>Thumbnail</FieldLabel>
-                  {/* <div
-                    className={`flex flex-col items-center justify-center border-2 border-dashed rounded-md p-6 cursor-pointer hover:border-blue-500 transition-colors ${
-                      fieldState.invalid ? "border-red-500" : "border-gray-300"
-                    }`}
-                    onClick={() =>
-                      document.getElementById("course-file")?.click()
-                    }
-                  >
-                    {field.value ? (
-                      <p className="text-sm font-medium">{field.value}</p>
-                    ) : (
-                      <>
-                        <p className="text-sm text-gray-500 mb-2">
-                          Drag & drop file here, or click to select
-                        </p>
-                        <Button size="sm" variant="outline">
-                          Choose File
-                        </Button>
-                      </>
-                    )}
-                    <input
-                      id="course-file"
-                      type="file"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) field.onChange(file.name);
-                      }}
-                    />
-                  </div> */}
-                  <MyDropzone />
+
+                  <MyDropzone onChange={field.onChange} value={field.value} />
                   {fieldState.error && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -395,8 +362,15 @@ export default function Page() {
           <Button type="button" variant="outline" onClick={() => form.reset()}>
             Reset
           </Button>
-          <Button type="submit" form="form-course">
-            Create Course
+          <Button type="submit" disabled={pending} form="form-course">
+            {pending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              "Create Course"
+            )}
           </Button>
         </Field>
       </CardFooter>

@@ -1,9 +1,14 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDropzone, FileRejection } from "react-dropzone";
 
-import { RenderErrorState, RenderState } from "./RenderState";
+import {
+  RenderErrorState,
+  RenderState,
+  RenderUploadedState,
+  RenderUploadingState,
+} from "./RenderState";
 
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
@@ -21,7 +26,12 @@ interface UploaderState {
   fileType: "image" | "video";
 }
 
-export function MyDropzone() {
+interface iAppProps {
+  value?: string;
+  onChange?: (value: string) => void;
+}
+
+export function MyDropzone({ value, onChange }: iAppProps) {
   const [hasError, setHasError] = useState(false);
   const [file, setFile] = useState<UploaderState>({
     error: null,
@@ -32,6 +42,7 @@ export function MyDropzone() {
     uploading: false,
     objectUrl: null,
     fileType: "image",
+    key: value,
   });
 
   async function uploadFile(file: File) {
@@ -86,6 +97,7 @@ export function MyDropzone() {
               uploading: false,
               key,
             }));
+            onChange?.(key);
             toast.success("File uploaded successfully");
             resolve();
           } else {
@@ -111,27 +123,91 @@ export function MyDropzone() {
   }
 
   // Accepted files
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      const selectedFile = acceptedFiles[0];
-      setFile({
-        file: selectedFile,
-        id: uuidv4(),
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length > 0) {
+        const selectedFile = acceptedFiles[0];
+        if (file.objectUrl && !file.objectUrl.startsWith("http")) {
+          URL.revokeObjectURL(file.objectUrl);
+        }
+        setFile({
+          file: selectedFile,
+          id: uuidv4(),
+          uploading: false,
+          progress: 0,
+          error: false,
+          isDeleting: false,
+          objectUrl: URL.createObjectURL(selectedFile),
+          fileType: "image",
+        });
+        uploadFile(selectedFile);
+        setHasError(false); // clear error
+        toast.success(`File "${selectedFile.name}" uploaded successfully!`);
+        console.log(file.objectUrl);
+        console.log("Accepted file:", selectedFile);
+      }
+    },
+    [file.objectUrl]
+  );
+  async function handleRemove() {
+    if (file.isDeleting || !file.objectUrl) return;
+    try {
+      setFile((prev) => ({
+        ...prev,
+        isDeleting: true,
+      }));
+      const response = await fetch("/api/s3/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: file.key,
+        }),
+      });
+      if (!response.ok) {
+        toast.error("Failed to emove file fron storage");
+        setFile((prev) => ({
+          ...prev,
+          isDeleting: true,
+          error: true,
+        }));
+        return;
+      }
+      if (file.objectUrl && !file.objectUrl.startsWith("http")) {
+        URL.revokeObjectURL(file.objectUrl);
+      }
+      onChange?.("");
+
+      setFile(() => ({
+        file: null,
         uploading: false,
         progress: 0,
         error: false,
-        isDeleting: false,
-        objectUrl: URL.createObjectURL(selectedFile),
+        objectUrl: undefined,
+        id: null,
         fileType: "image",
-      });
-      uploadFile(selectedFile);
-      setHasError(false); // clear error
-      toast.success(`File "${selectedFile.name}" uploaded successfully!`);
-      console.log("Accepted file:", selectedFile);
-    }
-  }, []);
+        isDeleting: false,
+      }));
+      toast.success("deleted");
+    } catch {
+      toast.error("Error removing file.please try again");
+      setFile((prev) => ({
+        ...prev,
+        error: true,
 
-  // Rejected files
+        isDeleting: false,
+      }));
+    }
+  }
+
+  useEffect(() => {
+    // if there is a previous object URL, revoke it when a new one is created or component unmounts
+    return () => {
+      if (file.objectUrl && !file.objectUrl.startsWith("http")) {
+        URL.revokeObjectURL(file.objectUrl);
+      }
+    };
+  }, [file.objectUrl]);
+
   const onDropRejected = useCallback((fileRejections: FileRejection[]) => {
     setHasError(true);
     fileRejections.forEach((rejection) => {
@@ -155,13 +231,24 @@ export function MyDropzone() {
 
   function renderContent() {
     if (file.uploading) {
-      return <h1>Uploading...</h1>;
+      return (
+        <RenderUploadingState
+          file={file.file as File}
+          progress={file.progress}
+        />
+      );
     }
     if (file.error) {
       return <RenderErrorState />;
     }
     if (file.objectUrl) {
-      return <h1>uploaded file</h1>;
+      return (
+        <RenderUploadedState
+          previewUrl={file.objectUrl}
+          handleRemoval={handleRemove}
+          isDeleting={file.isDeleting}
+        />
+      );
     }
     return <RenderState isDragActive={isDragActive} />;
   }
@@ -173,12 +260,13 @@ export function MyDropzone() {
     multiple: false,
     maxFiles: 1,
     maxSize: 5 * 1024 * 1024,
+    disabled: file.uploading || !!file.objectUrl,
   });
 
   return (
     <div
       {...getRootProps()}
-      className={`flex flex-col items-center justify-center border-2 border-dashed rounded-md p-6 cursor-pointer transition-colors
+      className={`min-h-64 flex flex-col items-center justify-center border-2 border-dashed rounded-md p-6 cursor-pointer transition-colors
         ${
           isDragActive
             ? "border-amber-500 "
