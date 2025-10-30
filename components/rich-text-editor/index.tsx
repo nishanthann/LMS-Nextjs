@@ -29,12 +29,12 @@ export default function RichTextEditor({ field }: { field: any }) {
         types: ["heading", "paragraph"],
       }),
       Highlight,
-      Heading.configure({
-        levels: [1, 2, 3],
-        HTMLAttributes: {
-          class: "custom-heading",
-        },
-      }),
+      // Heading.configure({
+      //   levels: [1, 2, 3],
+      //   HTMLAttributes: {
+      //     class: "custom-heading",
+      //   },
+      // }),
     ],
     content:
       field?.value && field.value !== ""
