@@ -12,6 +12,7 @@ import {
 
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { useConstruct } from "@/hooks/use-construct";
 
 interface UploaderState {
   id: string | null;
@@ -32,6 +33,7 @@ interface iAppProps {
 }
 
 export function MyDropzone({ value, onChange }: iAppProps) {
+  const fileUrl = useConstruct(value || "");
   const [hasError, setHasError] = useState(false);
   const [file, setFile] = useState<UploaderState>({
     error: null,
@@ -40,9 +42,10 @@ export function MyDropzone({ value, onChange }: iAppProps) {
     progress: 0,
     isDeleting: false,
     uploading: false,
-    objectUrl: null,
+
     fileType: "image",
     key: value,
+    objectUrl: fileUrl,
   });
 
   async function uploadFile(file: File) {

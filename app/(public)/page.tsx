@@ -1,11 +1,8 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-
-import { toast } from "sonner";
 
 interface featuresType {
   title: string;
@@ -40,24 +37,7 @@ const features: featuresType[] = [
 ];
 
 export default function Home() {
-  const router = useRouter();
   const { data: session } = authClient.useSession();
-  async function signOut() {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/"); // redirect to login page
-          toast.success("Logged out successfully");
-        },
-        onError: () => {
-          toast.error("Something went wrong");
-        },
-      },
-    });
-  }
-  function goToLogin() {
-    router.push("/login");
-  }
 
   console.log("Session Data:", session);
   return (

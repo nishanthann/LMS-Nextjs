@@ -6,26 +6,10 @@ import { buttonVariants } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/theme-toggle";
 import { authClient } from "@/lib/auth-client";
 import Component from "./UserButton";
-// import { useRouter } from "next/navigation";
-// import { toast } from "sonner";
 
 export default function Navbar() {
-  // const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
 
-  // async function signOut() {
-  //   await authClient.signOut({
-  //     fetchOptions: {
-  //       onSuccess: () => {
-  //         router.push("/"); // redirect to login page
-  //         toast.success("Logged out successfully");
-  //       },
-  //       onError: () => {
-  //         toast.error("Something went wrong");
-  //       },
-  //     },
-  //   });
-  // }
   const menuItems = [
     { title: "Home", href: "/" },
     { title: "About", href: "/about" },
@@ -72,12 +56,6 @@ export default function Navbar() {
               Login
             </Link>
           )}
-          {/* <Link
-            href="/login"
-            className={buttonVariants({ variant: "outline", size: "lg" })}
-          >
-            Login
-          </Link> */}
         </div>
       </div>
     </nav>
