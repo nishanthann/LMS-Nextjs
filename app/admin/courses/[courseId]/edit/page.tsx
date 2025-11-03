@@ -16,7 +16,7 @@ export default async function EditPage({ params }: { params: Params }) {
   const { courseId } = await params;
   const data = await getAdminSingleCourse(courseId);
   const serializableData = JSON.parse(JSON.stringify(data));
-  console.log("Course data:", serializableData); // ✅ Add here
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8">

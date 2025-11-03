@@ -40,7 +40,6 @@ interface iAppProps {
   data: getAdminSingleCourseType;
 }
 export function EditCourseForm({ data }: iAppProps) {
-  console.log("Course data:", data); // ✅ Add here
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   const form = useForm<CourseSchemaType>({
