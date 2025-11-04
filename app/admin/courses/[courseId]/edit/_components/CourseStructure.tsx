@@ -31,12 +31,15 @@ import {
   ChevronsRightIcon,
   FileText,
   GripVertical,
-  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
 import { reorderChapters, reorderLessons } from "../action";
+import NewChapterModal from "./NewChapterModal";
+import NewLessonModal from "./NewLessonModal";
+import { DeleteLesson } from "./DeleteLesson";
+import { DeleteChapter } from "./DeleteChapter";
 
 interface iAppProps {
   data: getAdminSingleCourseType;
@@ -255,8 +258,9 @@ export default function CourseStructure({ data }: iAppProps) {
       sensors={sensors}
     >
       <Card>
-        <CardHeader className="flex flex-row items-center  border-b border-border">
+        <CardHeader className="flex flex-row items-center justify-between border-b border-border">
           <CardTitle>Chapters</CardTitle>
+          <NewChapterModal courseId={data.id} />
         </CardHeader>
         <CardContent className="space-y-4">
           <SortableContext strategy={verticalListSortingStrategy} items={items}>
@@ -299,9 +303,7 @@ export default function CourseStructure({ data }: iAppProps) {
                             {item.title}
                           </p>
                         </div>
-                        <Button variant={"ghost"}>
-                          <Trash2 className="size-4" />
-                        </Button>
+                        <DeleteChapter chapterId={item.id} courseId={data.id} />
                       </div>
 
                       <CollapsibleContent className="flex flex-col gap-2">
@@ -317,11 +319,12 @@ export default function CourseStructure({ data }: iAppProps) {
                                 data={{ type: "lesson", chapterId: item.id }}
                               >
                                 {(lessonListeners) => (
-                                  <div className="flex items-center justify-between  p-2 hover:bg-accent rounded-sm">
+                                  <div className="flex items-center justify-between  p-2 hover:bg-accent/20 rounded-sm">
                                     <div className="flex items-center gap-1 ">
                                       <Button
                                         variant={"ghost"}
                                         {...lessonListeners}
+                                        className="cursor-grab"
                                       >
                                         <GripVertical className="size-4" />
                                       </Button>
@@ -332,18 +335,24 @@ export default function CourseStructure({ data }: iAppProps) {
                                         {lesson.title}
                                       </Link>
                                     </div>
-                                    <Button variant={"ghost"}>
-                                      <Trash2 className="size-4" />
-                                    </Button>
+                                    <DeleteLesson
+                                      chapterId={item.id}
+                                      courseId={data.id}
+                                      lessonId={lesson.id}
+                                    />
                                   </div>
                                 )}
                               </SortableItem>
                             ))}
                           </SortableContext>
                           <div className="p-2">
-                            <Button variant={"outline"} className="w-full">
+                            <NewLessonModal
+                              chapterId={item.id}
+                              courseId={data.id}
+                            />
+                            {/* <Button variant={"outline"} className="w-full">
                               Create New Lesson
-                            </Button>
+                            </Button> */}
                           </div>
                         </div>
                       </CollapsibleContent>
