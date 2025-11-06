@@ -343,7 +343,11 @@ export default function Page() {
                 >
                   <FieldLabel>Thumbnail</FieldLabel>
 
-                  <MyDropzone onChange={field.onChange} value={field.value} />
+                  <MyDropzone
+                    onChange={field.onChange}
+                    value={field.value}
+                    fileTypeAccepted="image"
+                  />
                   {fieldState.error && (
                     <FieldError errors={[fieldState.error]} />
                   )}

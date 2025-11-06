@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import z from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { S3 } from "@/lib/S3Client";
-import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
+import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { requireAdmin } from "@/app/data/admin/require-admin";
 
 export const fileUploadSchema = z.object({
@@ -15,9 +15,7 @@ export const fileUploadSchema = z.object({
   isImage: z.boolean(),
 });
 
-const aj = arcjet
-  .withRule(detectBot({ mode: "LIVE", allow: [] }))
-  .withRule(fixedWindow({ max: 2, window: "1m", mode: "LIVE" }));
+const aj = arcjet.withRule(fixedWindow({ max: 2, window: "1m", mode: "LIVE" }));
 
 export async function POST(request: Request) {
   const session = await requireAdmin();

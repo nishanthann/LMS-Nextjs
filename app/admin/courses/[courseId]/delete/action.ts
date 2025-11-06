@@ -2,18 +2,16 @@
 
 import { requireAdmin } from "@/app/data/admin/require-admin";
 import arcjet, { fixedWindow } from "@/lib/arcjet";
-
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/types";
-import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
 import { request } from "@arcjet/next";
+import { revalidatePath } from "next/cache";
 
 const aj = arcjet.withRule(fixedWindow({ max: 4, window: "1m", mode: "LIVE" }));
 
-export async function createCourseFile(
-  values: CourseSchemaType
-): Promise<ApiResponse> {
+export async function deleteCourse(courseId: string): Promise<ApiResponse> {
   const session = await requireAdmin();
+
   try {
     const req = await request();
     const decision = await aj.protect(req, {
@@ -32,28 +30,23 @@ export async function createCourseFile(
         };
       }
     }
-    const validation = courseSchema.safeParse(values);
-    if (!validation.success) {
-      return {
-        status: "error",
-        message: "Invalid Form daa",
-      };
-    }
-    await prisma.course.create({
-      data: {
-        ...validation.data,
-        userId: session?.user.id as string,
-      },
+    // 1️⃣ Find course with its chapters and lessons
+    await prisma.course.delete({
+      where: { id: courseId },
     });
+
+    // 3️⃣ Revalidate admin courses list page
+    revalidatePath("/admin/courses");
+
     return {
       status: "success",
-      message: "Course created succesfully",
+      message: "Course deleted successfully",
     };
   } catch (error) {
-    console.log((error as Error).message);
+    console.error("Error deleting course:", error);
     return {
       status: "error",
-      message: "Something went wrong",
+      message: "Failed to delete course",
     };
   }
 }

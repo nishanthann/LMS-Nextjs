@@ -2,11 +2,15 @@ import { getAdminCourse } from "@/app/data/admin/get-admin-course";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 
-import { AdminCourseCard } from "./_components/AdminCourseCard";
+import {
+  AdminCourseCard,
+  AdminCourseCardSkeleton,
+} from "./_components/AdminCourseCard";
+import { EmptyState } from "@/components/general/EmptyState";
+import { Layers } from "lucide-react";
+import { Suspense } from "react";
 
-export default async function Page() {
-  const data = await getAdminCourse();
-
+export default function Page() {
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -16,17 +20,49 @@ export default async function Page() {
           Create Course
         </Link>
       </div>
+      <Suspense fallback={<AdminCourseCardSkeletonLayout />}>
+        <RenderCourses />
+      </Suspense>
+    </div>
+  );
+}
 
-      {/* Courses Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data.length > 0 ? (
-          data.map((course) => (
-            <AdminCourseCard data={course} key={course.id} />
-          ))
-        ) : (
-          <p className="text-muted-foreground">No courses found.</p>
-        )}
-      </div>
+async function RenderCourses() {
+  const data = await getAdminCourse();
+
+  return (
+    <>
+      {data.length === 0 ? (
+        <EmptyState
+          title="No courses yet"
+          description="Start building your course by adding the first course."
+          actionLabel="Add Course"
+          actionHref="/admin/courses/create"
+          icon={<Layers className="w-12 h-12 text-muted-foreground" />}
+        />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {data.length > 0 ? (
+            data.map((course) => (
+              <AdminCourseCard data={course} key={course.id} />
+            ))
+          ) : (
+            <p className="text-muted-foreground">No courses found.</p>
+          )}
+        </div>
+      )}
+    </>
+  );
+}
+
+function AdminCourseCardSkeletonLayout() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <AdminCourseCardSkeleton />
+      <AdminCourseCardSkeleton />
+      <AdminCourseCardSkeleton />
+      <AdminCourseCardSkeleton />
+      <AdminCourseCardSkeleton />
     </div>
   );
 }

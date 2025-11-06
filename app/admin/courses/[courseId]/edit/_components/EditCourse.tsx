@@ -321,7 +321,11 @@ export function EditCourseForm({ data }: iAppProps) {
               >
                 <FieldLabel>Thumbnail</FieldLabel>
 
-                <MyDropzone onChange={field.onChange} value={field.value} />
+                <MyDropzone
+                  onChange={field.onChange}
+                  value={field.value}
+                  fileTypeAccepted="image"
+                />
                 {fieldState.error && <FieldError errors={[fieldState.error]} />}
                 <FieldDescription>
                   Upload course thumbnail (image). Max size: 5MB.
