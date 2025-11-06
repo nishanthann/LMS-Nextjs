@@ -24,17 +24,17 @@ export default function MenuBar2({ editor }: { editor: Editor | null }) {
     {
       icon: <Heading1 className="size-4" />,
       onClick: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
-      preesed: editor.isActive("heading", { level: 1 }),
+      preesed: editor.isActive("heading", { levels: 1 }),
     },
     {
       icon: <Heading2 className="size-4" />,
       onClick: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
-      preesed: editor.isActive("heading", { level: 2 }),
+      preesed: editor.isActive("heading", { levels: 2 }),
     },
     {
       icon: <Heading3 className="size-4" />,
       onClick: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
-      preesed: editor.isActive("heading", { level: 3 }),
+      preesed: editor.isActive("heading", { levels: 3 }),
     },
     {
       icon: <Bold className="size-4" />,

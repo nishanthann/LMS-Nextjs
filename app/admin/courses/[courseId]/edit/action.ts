@@ -2,7 +2,7 @@
 
 import { requireAdmin } from "@/app/data/admin/require-admin";
 
-import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
+import arcjet, { fixedWindow } from "@/lib/arcjet";
 
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/types";
@@ -16,9 +16,7 @@ import {
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
 
-const aj = arcjet
-  .withRule(detectBot({ mode: "LIVE", allow: [] }))
-  .withRule(fixedWindow({ max: 2, window: "1m", mode: "LIVE" }));
+const aj = arcjet.withRule(fixedWindow({ max: 2, window: "1m", mode: "LIVE" }));
 
 export async function editCourseFile(
   values: CourseSchemaType,

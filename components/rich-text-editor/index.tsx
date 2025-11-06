@@ -6,7 +6,6 @@ import React from "react";
 import MenuBar from "./menu-bar";
 import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
-import Heading from "@tiptap/extension-heading";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function RichTextEditor({ field }: { field: any }) {
@@ -29,12 +28,6 @@ export default function RichTextEditor({ field }: { field: any }) {
         types: ["heading", "paragraph"],
       }),
       Highlight,
-      // Heading.configure({
-      //   levels: [1, 2, 3],
-      //   HTMLAttributes: {
-      //     class: "custom-heading",
-      //   },
-      // }),
     ],
     content:
       field?.value && field.value !== ""

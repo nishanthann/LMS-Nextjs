@@ -81,7 +81,7 @@ export const lessonSchema = z.object({
   chapterId: z.string().min(1, { message: "Chapter ID is required" }),
   description: z
     .string()
-    .min(4, {
+    .min(1, {
       message: "Description is required and must be at least 4 characters.",
     })
     .optional(),
