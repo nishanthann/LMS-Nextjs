@@ -20,11 +20,16 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
+import { checkCourseBought } from "@/app/data/user/user-is-enrolled";
+import Link from "next/link";
+import { EnrollementButton } from "./_componenents/EnrollementButton";
+
 type Params = Promise<{ slug: string }>;
 
 export default async function SlugPage({ params }: { params: Params }) {
   const { slug } = await params;
   const course = await getIndivdualSingleCourse(slug);
+  const isEnrolled = await checkCourseBought(course.id);
   const totalLessons = course.chapter.reduce(
     (acc, ch) => acc + ch.lesson.length,
     0
@@ -59,7 +64,7 @@ export default async function SlugPage({ params }: { params: Params }) {
           {/* Title & Small Description */}
           <div>
             <div className="flex items-center justify-between mt-6">
-              <h2 className="text-xl font-semibold">Course Content</h2>
+              <h2 className="text-xl font-semibold">{course.title}</h2>
               <p className="text-sm text-muted-foreground">
                 {course.chapter.length} Chapters •{" "}
                 {course.chapter.reduce(
@@ -151,9 +156,18 @@ export default async function SlugPage({ params }: { params: Params }) {
 
               <CardContent className="p-6 space-y-5">
                 {/* CTA */}
-                <Button size="lg" className="w-full text-base font-semibold">
-                  Enroll Now
-                </Button>
+
+                {isEnrolled ? (
+                  <Button
+                    asChild
+                    size="lg"
+                    className="w-full text-base font-semibold"
+                  >
+                    <Link href="/dashboard">Learn Now</Link>
+                  </Button>
+                ) : (
+                  <EnrollementButton courseId={course.id} />
+                )}
 
                 {/* Divider */}
                 <div className="border-t pt-4">
