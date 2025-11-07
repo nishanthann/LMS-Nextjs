@@ -102,6 +102,7 @@ model Course {
 
   chapter  Chapter[]
   enrollment Enrollment[]
+  stripePriceId String
   
 
 }
@@ -169,6 +170,8 @@ model Enrollment {
   courseId String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
+
+  @@unique([userId, courseId])
 
 }
 
