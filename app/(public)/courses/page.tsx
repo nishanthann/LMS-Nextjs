@@ -35,14 +35,6 @@ export default function PublicCoursePage() {
 async function RenderCourses() {
   const courses = await getAllCourses();
 
-  //   if (courses.length !== 0) {
-  //     return (
-  //       <p className="text-center text-muted-foreground mt-10">
-  //         No courses are available right now. Please check back soon!
-  //       </p>
-  //     );
-  //   }
-
   return (
     <>
       {courses.length === 0 ? (

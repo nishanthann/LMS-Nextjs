@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { Suspense, useState, useTransition } from "react";
 import {
   InputOTP,
   InputOTPGroup,
@@ -23,7 +23,15 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
-export default function VerifyEmailPage() {
+export default function VerifyEmailWrapper() {
+  return (
+    <Suspense>
+      <VerifyEmailPage />
+    </Suspense>
+  );
+}
+
+function VerifyEmailPage() {
   const router = useRouter();
   const [otp, setOtp] = useState("");
   const [isPending, startTransition] = useTransition();

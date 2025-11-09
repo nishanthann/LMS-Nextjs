@@ -1,7 +1,7 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
+
 import Link from "next/link";
 
 interface featuresType {
@@ -37,9 +37,6 @@ const features: featuresType[] = [
 ];
 
 export default function Home() {
-  const { data: session } = authClient.useSession();
-
-  console.log("Session Data:", session);
   return (
     <>
       <section className="realative py-20">
