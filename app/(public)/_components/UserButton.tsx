@@ -85,7 +85,7 @@ export default function Component({ email, name, image }: iAppProps) {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href={"/Dashboard"}>
+            <Link href={"/dashboard"}>
               <LayoutDashboardIcon
                 size={16}
                 className="opacity-60"

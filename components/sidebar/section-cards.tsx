@@ -1,6 +1,6 @@
-import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
+import { IconTrendingUp } from "@tabler/icons-react";
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardAction,
@@ -8,16 +8,19 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
+import { adminGetDashStats } from "@/app/data/admin/admin-get-dash-stats";
 
-export function SectionCards() {
+export async function SectionCards() {
+  const stats = await adminGetDashStats();
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-      <Card className="@container/card">
+    <div className="grid grid-cols-1 gap-4 px-4 lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+      {/* Total Signups */}
+      <Card>
         <CardHeader>
-          <CardDescription>Total Revenue</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $1,250.00
+          <CardDescription>Total Signups</CardDescription>
+          <CardTitle className="text-2xl font-semibold tabular-nums">
+            {stats.totalSignups}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
@@ -27,61 +30,63 @@ export function SectionCards() {
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Trending up this month <IconTrendingUp className="size-4" />
+          <div className="flex gap-2 font-medium">
+            Users joined recently <IconTrendingUp className="size-4" />
           </div>
-          <div className="text-muted-foreground">
-            Visitors for the last 6 months
-          </div>
+          <div className="text-muted-foreground">Total registered users</div>
         </CardFooter>
       </Card>
-      <Card className="@container/card">
+
+      {/* Total Customers */}
+      <Card>
         <CardHeader>
-          <CardDescription>New Customers</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            1,234
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingDown />
-              -20%
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Down 20% this period <IconTrendingDown className="size-4" />
-          </div>
-          <div className="text-muted-foreground">
-            Acquisition needs attention
-          </div>
-        </CardFooter>
-      </Card>
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Active Accounts</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            45,678
+          <CardDescription>Total Customers</CardDescription>
+          <CardTitle className="text-2xl font-semibold tabular-nums">
+            {stats.totalCustomers}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
               <IconTrendingUp />
-              +12.5%
+              +5.3%
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Strong user retention <IconTrendingUp className="size-4" />
+          <div className="flex gap-2 font-medium">
+            Active paying users <IconTrendingUp className="size-4" />
           </div>
-          <div className="text-muted-foreground">Engagement exceed targets</div>
+          <div className="text-muted-foreground">Those with enrollments</div>
         </CardFooter>
       </Card>
-      <Card className="@container/card">
+
+      {/* Total Courses */}
+      <Card>
         <CardHeader>
-          <CardDescription>Growth Rate</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            4.5%
+          <CardDescription>Total Courses</CardDescription>
+          <CardTitle className="text-2xl font-semibold tabular-nums">
+            {stats.totalCourses}
+          </CardTitle>
+          <CardAction>
+            <Badge variant="outline">
+              <IconTrendingUp />
+              +2.1%
+            </Badge>
+          </CardAction>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="flex gap-2 font-medium">
+            Courses available <IconTrendingUp className="size-4" />
+          </div>
+          <div className="text-muted-foreground">Active published courses</div>
+        </CardFooter>
+      </Card>
+
+      {/* Total Lessons */}
+      <Card>
+        <CardHeader>
+          <CardDescription>Total Lessons</CardDescription>
+          <CardTitle className="text-2xl font-semibold tabular-nums">
+            {stats.totalLessons}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
@@ -91,12 +96,12 @@ export function SectionCards() {
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Steady performance increase <IconTrendingUp className="size-4" />
+          <div className="flex gap-2 font-medium">
+            Lessons created <IconTrendingUp className="size-4" />
           </div>
-          <div className="text-muted-foreground">Meets growth projections</div>
+          <div className="text-muted-foreground">Across all courses</div>
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
