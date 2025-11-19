@@ -6,6 +6,7 @@ import PublicCourseard, {
 import { Suspense } from "react";
 import { EmptyState } from "@/components/general/EmptyState";
 import { Layers } from "lucide-react";
+export const dynamic = "force-dynamic";
 
 export default function PublicCoursePage() {
   return (

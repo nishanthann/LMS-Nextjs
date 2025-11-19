@@ -1,6 +1,7 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 
 import Link from "next/link";
 
@@ -37,6 +38,7 @@ const features: featuresType[] = [
 ];
 
 export default function Home() {
+  const { data: session, isPending } = authClient.useSession();
   return (
     <>
       <section className="realative py-20">
@@ -50,6 +52,12 @@ export default function Home() {
             Router feature. This is a simple example of a Next.js application
             using the new App Router feature.
           </p>
+          {isPending ? null : session ? (
+            <p className="max-w-[700px] text-xs md:text-xl text-red-600 animate-pulse">
+              Your role hardcoded as Admin for now!
+            </p>
+          ) : null}
+
           <div className="flex flex-col sm:flex-row gap-4 mt-8">
             <Link className={buttonVariants({ size: "lg" })} href="/courses">
               Explore Courses

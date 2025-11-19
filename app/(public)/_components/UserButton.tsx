@@ -94,6 +94,16 @@ export default function Component({ email, name, image }: iAppProps) {
               <span>Dashboard</span>
             </Link>
           </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={"/admin"}>
+              <LayoutDashboardIcon
+                size={16}
+                className="opacity-60"
+                aria-hidden="true"
+              />
+              <span>Admin Dashboard</span>
+            </Link>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
