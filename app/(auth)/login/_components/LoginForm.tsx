@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ModeToggle } from "@/components/ui/theme-toggle";
+
 import { authClient } from "@/lib/auth-client";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -75,18 +75,6 @@ export default function LoginForm() {
               required
             />
           </div>
-          {/* <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <a
-                  href="#"
-                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                >
-                  Forgot your password?
-                </a>
-              </div>
-              <Input id="password" type="password" required />
-            </div> */}
         </div>
         <Button
           onClick={signin}
@@ -105,9 +93,6 @@ export default function LoginForm() {
       </CardContent>
       <CardFooter className="flex-col gap-2">
         <div className="relative text-center text-sm text-stone-500">
-          {/* <div className="absolute inset-0 flex items-center">
-            <div className="border-border w-full border-t"></div>
-          </div> */}
           <span className="relative px-2">Or continue with</span>
         </div>
         <Button
@@ -126,7 +111,6 @@ export default function LoginForm() {
           )}
         </Button>
       </CardFooter>
-      <ModeToggle />
     </Card>
   );
 }
