@@ -47,13 +47,13 @@ export default function Home() {
           <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">
             Welcome to Nextus!
           </h1>
-          <p className="max-w-[700px]  text-muted-foreground md:text-xl">
-            This is a simple example of a Next.js application using the new App
-            Router feature. This is a simple example of a Next.js application
-            using the new App Router feature.
+          <p className="max-w-175  text-muted-foreground md:text-xl">
+            A lightweight Learning Management System for managing courses,
+            tracking progress, and engaging students with a streamlined user
+            experience.
           </p>
           {isPending ? null : session ? (
-            <p className="max-w-[700px] text-xs md:text-xl text-red-600 animate-pulse">
+            <p className="max-w-175 text-xs md:text-xl text-red-600 animate-pulse">
               Your role hardcoded as Admin for now!
             </p>
           ) : null}

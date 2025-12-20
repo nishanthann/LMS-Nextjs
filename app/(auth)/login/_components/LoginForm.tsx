@@ -96,7 +96,7 @@ export default function LoginForm() {
         <CardDescription>Please sign in to your account</CardDescription>
         <CardDescription>
           <p className="text-xs text-red-500 animate-pulse">
-            Currently set dafault user role as Admin to view features
+            Currently we set your role as Admin to view features
           </p>
         </CardDescription>
       </CardHeader>

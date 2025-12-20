@@ -23,7 +23,7 @@ export default function Navbar() {
         {/* Left - Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image src={Logo} alt="Logo" width={32} height={32} />
-          <span className="text-lg font-semibold">MyWebsite</span>
+          <span className="text-lg font-semibold">Nextus</span>
         </Link>
 
         {/* Center - Menu */}

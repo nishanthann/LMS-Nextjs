@@ -8,7 +8,7 @@ export default async function LoginPage() {
     headers: await headers(),
   });
   if (session) {
-    return redirect("/"); // Redirect to home if already logged in
+    return redirect("/admin"); // Redirect to home if already logged in
   }
 
   return <LoginForm />;
