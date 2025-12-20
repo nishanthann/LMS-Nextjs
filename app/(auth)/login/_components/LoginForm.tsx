@@ -32,7 +32,7 @@ export default function LoginForm() {
     startTransition(async () => {
       await authClient.signIn.social({
         provider: "github",
-        callbackURL: "/",
+        callbackURL: "/admin",
         fetchOptions: {
           onSuccess: () => {
             toast.success("Logging in Github...");
@@ -48,7 +48,7 @@ export default function LoginForm() {
     startTransition(async () => {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/",
+        callbackURL: "/admin",
         fetchOptions: {
           onSuccess: () => {
             toast.success("Logging in Gmail...");
